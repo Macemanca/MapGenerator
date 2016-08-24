@@ -1,29 +1,38 @@
 package ca.maceman.mapgenerator.commons.model;
 
+/**
+ * A tile to be used in the {@link TileMap}
+ * 
+ * Has a position, a size, a depth and a {@link TileType}
+ * @author masa015
+ *
+ */
 public class Tile {
 
 	private float depth;
-	private int x;
-	private int y;
+	private int xPosition;
+	private int yPosition;
 	private int width;
 	private int height;
 	private TileType tileType;
+	private TileMap parentTileMap;
 
-	public Tile(float depth, int x, int y, int width, int height, TileType tileType) {
+	public Tile(float depth, int x, int y, int width, int height, TileType tileType, TileMap parentTileMap) {
 		super();
 		this.depth = depth;
-		this.x = x;
-		this.y = y;
+		this.xPosition = x;
+		this.yPosition = y;
 		this.width = width;
 		this.height = height;
 		this.tileType = tileType;
+		this.parentTileMap = parentTileMap;
 	}
 
 	public Tile(float depth, int x, int y) {
 		super();
 		this.depth = depth;
-		this.x = x;
-		this.y = y;
+		this.xPosition = x;
+		this.yPosition = y;
 		width = 1;
 		height = 1;
 	}
@@ -36,20 +45,20 @@ public class Tile {
 		this.depth = depth;
 	}
 
-	public int getX() {
-		return x;
+	public int getXPosition() {
+		return xPosition;
 	}
 
-	public void setX(int x) {
-		this.x = x;
+	public void setXPosition(int xPosition) {
+		this.xPosition = xPosition;
 	}
 
-	public int getY() {
-		return y;
+	public int getYPosition() {
+		return yPosition;
 	}
 
-	public void setY(int y) {
-		this.y = y;
+	public void setYPosition(int yPosition) {
+		this.yPosition = yPosition;
 	}
 
 	public int getWidth() {
@@ -74,6 +83,14 @@ public class Tile {
 
 	public void setType(TileType tileType) {
 		this.tileType = tileType;
+	}
+
+	public TileMap getParentTileMap() {
+		return parentTileMap;
+	}
+
+	public void setParentTileMap(TileMap parentTileMap) {
+		this.parentTileMap = parentTileMap;
 	}
 
 }

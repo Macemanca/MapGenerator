@@ -1,17 +1,31 @@
-package ca.maceman.mapgenerator.commons.utils.impl;
+package ca.maceman.mapgenerator.commons.generator.impl;
 
 import java.util.Random;
 
-import ca.maceman.mapgenerator.commons.utils.INoiseGenerator;
+import ca.maceman.mapgenerator.commons.generator.INoiseGenerator;
 
+/**
+ * Simple implementation of the {@link INoiseGenerator}
+ * 
+ * @author Andy Massé
+ * 
+ */
 public class SimpleNoiseGenerator implements INoiseGenerator {
 
 	private long seed = 0;
 	private Random r;
 
+	/**
+	 * Simple Constructor
+	 * @param seed
+	 */
 	public SimpleNoiseGenerator(long seed) {
 		this.seed = seed;
 	}
+
+	/**
+	 * {@inheritDoc}}
+	 */
 	public float[][] GenerateWhiteNoise(int width, int height, int borderWidth) {
 
 		float[][] noise = new float[width][height];
@@ -24,9 +38,11 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
+
 				/* Check if coordinate is part of the border */
 				if (((i <= borderWidth) || (i >= width - borderWidth) || (j <= borderWidth) || (j >= height - borderWidth))
 						&& borderWidth != 0) {
+
 					noise[i][j] = (float) 0;
 				} else {
 					noise[i][j] = (float) r.nextDouble();
@@ -36,6 +52,9 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 		return noise;
 	}
 
+	/**
+	 * {@inheritDoc}}
+	 */
 	public float[][] GenerateRadialWhiteNoise(int width, int height) {
 
 		float[][] noise = new float[width][height];
@@ -62,10 +81,10 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 				if (((i <= borderWidth) || (i >= width - borderWidth)
 						|| (j <= borderWidth) || (j >= height - borderWidth))
 						&& borderWidth != 0) {
+
 					noise[i][j] = (float) 0;
 				} else {
-					noise[i][j] = (float) r.nextDouble()
-							- (distanceToCenter / 256);
+					noise[i][j] = (float) r.nextDouble() - (distanceToCenter / 256);
 				}
 			}
 		}
@@ -73,6 +92,9 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 		return noise;
 	}
 
+	/**
+	 * {@inheritDoc}}
+	 */
 	public float[][] GenerateSmoothNoise(float[][] baseNoise, int octave) {
 
 		float horizontal_blend = 0f;
@@ -81,43 +103,42 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 		float bottom = 0f;
 		int sample_ia = 0;
 		int sample_ib = 0;
-		int sample_ja = 0;
-		int sample_jb = 0;
+		int sample_Y_A = 0;
+		int sample_Y_B = 0;
 		int width = baseNoise.length;
 		int height = baseNoise[0].length;
-		int samplePeriod = 1 << octave; // Shift bits the numbers of octaves to
-										// the left, example : 1 << 2 means 0001
-										// becomes 0100
+		int samplePeriod = 1 << octave;
 		float[][] smoothNoise = new float[width][height];
 		float sampleFrequency = 1.0f / samplePeriod;
 
-		for (int i = 0; i < width; i++) {
+		for (int mapX = 0; mapX < width; mapX++) {
 
 			/* Calculate the horizontal sampling indices */
-			sample_ia = (i / samplePeriod) * samplePeriod;
-			sample_ib = (sample_ia + samplePeriod) % width; // wrap around
-			horizontal_blend = (i - sample_ia) * sampleFrequency;
+			sample_ia = (mapX / samplePeriod) * samplePeriod;
+			sample_ib = (sample_ia + samplePeriod) % width;
+			horizontal_blend = (mapX - sample_ia) * sampleFrequency;
 
-			for (int j = 0; j < height; j++) {
+			for (int mapY = 0; mapY < height; mapY++) {
 
 				/* Calculate the vertical sampling indices */
-				sample_ja = (j / samplePeriod) * samplePeriod;
-				sample_jb = (sample_ja + samplePeriod) % height; // wrap around
-				vertical_blend = (j - sample_ja) * sampleFrequency;
+				sample_Y_A = (mapY / samplePeriod) * samplePeriod;
+				sample_Y_B = (sample_Y_A + samplePeriod) % height; // wrap around
+				vertical_blend = (mapY - sample_Y_A) * sampleFrequency;
 
 				/* Blend the top and bottom corners */
-				top = interpolate(baseNoise[sample_ia][sample_ja],
-						baseNoise[sample_ib][sample_ja], horizontal_blend);
-				bottom = interpolate(baseNoise[sample_ia][sample_jb],
-						baseNoise[sample_ib][sample_jb], horizontal_blend);
+				top = interpolate(baseNoise[sample_ia][sample_Y_A], baseNoise[sample_ib][sample_Y_A], horizontal_blend);
+				bottom = interpolate(baseNoise[sample_ia][sample_Y_B], baseNoise[sample_ib][sample_Y_B], horizontal_blend);
 
 				/* Final blend */
-				smoothNoise[i][j] = interpolate(top, bottom, vertical_blend);
+				smoothNoise[mapX][mapY] = interpolate(top, bottom, vertical_blend);
 			}
 		}
 		return smoothNoise;
 	}
 
+	/**
+	 * {@inheritDoc}}
+	 */
 	public float[][] GeneratePerlinNoise(float[][] baseNoise, int octaveCount) {
 		float[][][] smoothNoise = new float[octaveCount][][];
 		float persistance = 0.5f;
@@ -135,8 +156,10 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 
 		/* Blend noises together */
 		for (int octave = octaveCount - 1; octave >= 0; octave--) {
+
 			amplitude *= persistance;
 			totalAmplitude += amplitude;
+
 			for (int i = 0; i < width; i++) {
 				for (int j = 0; j < height; j++) {
 					perlinNoise[i][j] += smoothNoise[octave][i][j] * amplitude;
@@ -154,8 +177,16 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 		return perlinNoise;
 	}
 
-	private float interpolate(float x0, float x1, float alpha) {
-		return x0 * (1 - alpha) + alpha * x1;
+	/**
+	 * Interpolate 2 points. Used for blending noises.
+	 * 
+	 * @param pointA
+	 * @param pointB
+	 * @param alpha
+	 * @return
+	 */
+	private float interpolate(float pointA, float pointB, float alpha) {
+		return pointA * (1 - alpha) + alpha * pointB;
 	}
 
 	public long getSeed() {

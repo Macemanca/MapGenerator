@@ -8,6 +8,7 @@ public class TileType {
 		this.id = id;
 		this.name = name;
 	}
+
 	public int getId() {
 		return id;
 	}

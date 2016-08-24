@@ -13,7 +13,6 @@ import ca.maceman.mapgenerator.swing.ui.MapGeneratorFrame;
 public class MapGeneratorFrameController {
 
 	private MapGeneratorFrame mapGeneratorFrame;
-
 	private IMapGenerator mapGenerator;
 
 	public MapGeneratorFrameController(MapGeneratorFrame mapGeneratorFrame) {
@@ -31,9 +30,7 @@ public class MapGeneratorFrameController {
 	 * @param seed
 	 * @return {@link TileMap}
 	 */
-	public TileMap GenerateNewMap(String mapWidthString,
-			String mapHeightString, String mapBorderWidthString,
-			int octaveCount, String mapSeedString) {
+	public TileMap GenerateNewMap(String mapWidthString, String mapHeightString, String mapBorderWidthString, int octaveCount, String mapSeedString) {
 
 		int mapWidth = 0;
 		int mapHeight = 0;
@@ -73,18 +70,16 @@ public class MapGeneratorFrameController {
 	 * @param errorMessage
 	 */
 	public void showErr(String errorMessage) {
-		JOptionPane.showMessageDialog(mapGeneratorFrame,
-				"An error has occured: " + errorMessage, "Error",
-				JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(mapGeneratorFrame, "An error has occured: " + errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void MapToPanel() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void scaledImage(int i) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

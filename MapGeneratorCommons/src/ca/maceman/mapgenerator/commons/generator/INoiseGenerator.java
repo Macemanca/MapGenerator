@@ -1,10 +1,16 @@
-package ca.maceman.mapgenerator.commons.utils;
+package ca.maceman.mapgenerator.commons.generator;
 
+/**
+ * Generates different noises to be used when creating the tilemaps.
+ * 
+ * @author Andy Massé
+ * 
+ */
 public interface INoiseGenerator {
 
 	/**
-	 *  generates a array of random values (Noise)
-	 *  
+	 * Generates a array of random values (Noise)
+	 * 
 	 * @param width
 	 * @param height
 	 * @param borderWidth
@@ -13,7 +19,7 @@ public interface INoiseGenerator {
 	public float[][] GenerateWhiteNoise(int width, int height, int borderWidth);
 
 	/**
-	 *  uses a white noise array to create a new smooth array
+	 * Uses a white noise array to create a new smooth array
 	 * 
 	 * @param baseNoise
 	 * @param octave
@@ -22,7 +28,7 @@ public interface INoiseGenerator {
 	public float[][] GenerateSmoothNoise(float[][] baseNoise, int octave);
 
 	/**
-	 * creates a perlin noise using an array of smooth noises with increased
+	 * Creates a perlin noise using an array of smooth noises with increased
 	 * octaves. this returns an array with large areas of similar values where
 	 * the individual values are different enough so as to leave detail between
 	 * the variations creating a smoky appearance
