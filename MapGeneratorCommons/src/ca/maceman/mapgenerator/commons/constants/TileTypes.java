@@ -2,8 +2,12 @@ package ca.maceman.mapgenerator.commons.constants;
 
 import ca.maceman.mapgenerator.commons.model.TileType;
 
+/**
+ * Constants class for the different TileTypes.
+ * @author Macemanca
+ *
+ */
 public class TileTypes {
-
 	public static TileType EMPTY = new TileType(0, "EMPTY");
 	public static TileType BLACK_WATER = new TileType(1, "BLACK_WATER");
 	public static TileType DEEP_WATER = new TileType(2, "DEEP_WATER");

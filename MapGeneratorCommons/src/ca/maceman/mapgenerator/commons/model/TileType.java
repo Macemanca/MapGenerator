@@ -1,5 +1,13 @@
 package ca.maceman.mapgenerator.commons.model;
 
+/**
+ * Model for the {@link Tile}'s Type.
+ * 
+ * It has an ID and a name. This class should be used for assigning behaviour through different methods.
+ * 
+ * @author Andy
+ *
+ */
 public class TileType {
 	private int id;
 	private String name;

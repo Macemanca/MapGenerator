@@ -3,7 +3,7 @@ package ca.maceman.mapgenerator.commons.generator;
 /**
  * Generates different noises to be used when creating the tilemaps.
  * 
- * @author Andy Massé
+ * @author Macemanca
  * 
  */
 public interface INoiseGenerator {

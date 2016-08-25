@@ -1,5 +1,12 @@
 package ca.maceman.mapgenerator.commons.model;
 
+/**
+ * The tilemap class holds a 2-dimensional array of tiles. It has a width and a
+ * height.
+ * 
+ * @author Macemanca
+ *
+ */
 public class TileMap {
 
 	private int width = 0;

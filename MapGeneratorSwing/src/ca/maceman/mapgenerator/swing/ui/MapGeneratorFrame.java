@@ -14,19 +14,28 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 
+import ca.maceman.mapgenerator.commons.model.TileMap;
 import ca.maceman.mapgenerator.swing.controller.MapGeneratorFrameController;
+import javax.swing.JCheckBox;
 
+/**
+ * Windows for the map generator GUI
+ * 
+ * @author Andy
+ *
+ */
 public class MapGeneratorFrame extends JFrame {
-
+	private static final long serialVersionUID = -8679194374215117111L;
 	private static MapGeneratorFrameController mapGeneratorFrameController;
 	private JTextField txtWidth;
 	private JTextField txtHeight;
-	private JTextField txtBorderWidth;
 	private JTextField txtSeed;
 	private JLabel labelImageHolder;
 	private JScrollPane mainScrollPane;
 	private JPanel panelImg;
 	private JPanel panelImgControls;
+	private TileMap tileMap;
+	private JCheckBox chckbxIslandMap;
 
 	/**
 	 * Initialize the contents of the frame.
@@ -39,10 +48,8 @@ public class MapGeneratorFrame extends JFrame {
 		panelImg.setBounds(334, 11, 1000, 1000);
 
 		mainScrollPane = new JScrollPane(panelImg);
-		mainScrollPane
-				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		mainScrollPane
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		mainScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		mainScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		panelImg.setLayout(null);
 
 		labelImageHolder = new JLabel("");
@@ -53,8 +60,7 @@ public class MapGeneratorFrame extends JFrame {
 		this.getContentPane().add(mainScrollPane);
 
 		JPanel pnlControls = new JPanel();
-		pnlControls
-				.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		pnlControls.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		pnlControls.setBounds(10, 11, 314, 281);
 		this.getContentPane().add(pnlControls);
 		pnlControls.setLayout(null);
@@ -82,7 +88,7 @@ public class MapGeneratorFrame extends JFrame {
 		sliderAmp.setPaintLabels(true);
 		sliderAmp.setMinorTickSpacing(1);
 		sliderAmp.setValue(7);
-		sliderAmp.setMinimum(5);
+		sliderAmp.setMinimum(3);
 		sliderAmp.setMaximum(10);
 		sliderAmp.setBounds(76, 70, 228, 23);
 		pnlControls.add(sliderAmp);
@@ -91,22 +97,26 @@ public class MapGeneratorFrame extends JFrame {
 		lblDetail.setBounds(10, 67, 85, 14);
 		pnlControls.add(lblDetail);
 
-		JLabel lblBorderWidth = new JLabel("Border Width:");
-		lblBorderWidth.setBounds(10, 107, 67, 14);
-		pnlControls.add(lblBorderWidth);
+		final JSlider sliderBlend = new JSlider();
+		sliderBlend.setValue(7);
+		sliderBlend.setPaintTicks(true);
+		sliderBlend.setPaintLabels(true);
+		sliderBlend.setPaintTrack(true);
+		sliderBlend.setMinorTickSpacing(1);
+		sliderBlend.setMinimum(0);
+		sliderBlend.setMaximum(10);
+		sliderBlend.setBounds(76, 100, 228, 23);
+		pnlControls.add(sliderBlend);
 
-		txtBorderWidth = new JTextField();
-		txtBorderWidth.setBounds(87, 104, 86, 20);
-		pnlControls.add(txtBorderWidth);
-		txtBorderWidth.setColumns(10);
+		JLabel lblBlending = new JLabel("Blending:");
+		lblBlending.setBounds(10, 97, 85, 14);
+		pnlControls.add(lblBlending);
 
 		JButton btnGenerateTerrain = new JButton("Generate Image");
 		btnGenerateTerrain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				mapGeneratorFrameController.GenerateNewMap(txtWidth.getText(),
-						txtHeight.getText(), txtBorderWidth.getText(),
-						sliderAmp.getValue(), txtSeed.getText());
-				mapGeneratorFrameController.MapToPanel();
+				tileMap = mapGeneratorFrameController.GenerateNewMap(txtWidth.getText(), txtHeight.getText(), sliderAmp.getValue(), sliderBlend.getValue(), chckbxIslandMap.isSelected(), txtSeed.getText());
+				mapGeneratorFrameController.MapToPanel(tileMap);
 				panelImgControls.setVisible(true);
 
 			}
@@ -116,7 +126,7 @@ public class MapGeneratorFrame extends JFrame {
 		pnlControls.add(btnGenerateTerrain);
 
 		JLabel lblRandomSeed = new JLabel("Random Seed:");
-		lblRandomSeed.setBounds(10, 135, 76, 14);
+		lblRandomSeed.setBounds(10, 134, 76, 14);
 		pnlControls.add(lblRandomSeed);
 
 		JLabel lblPx = new JLabel("px");
@@ -128,13 +138,16 @@ public class MapGeneratorFrame extends JFrame {
 		pnlControls.add(label);
 
 		txtSeed = new JTextField();
-		txtSeed.setBounds(87, 132, 199, 20);
+		txtSeed.setBounds(87, 131, 199, 20);
 		pnlControls.add(txtSeed);
 		txtSeed.setColumns(10);
 
+		chckbxIslandMap = new JCheckBox("Island Map");
+		chckbxIslandMap.setBounds(6, 166, 97, 23);
+		pnlControls.add(chckbxIslandMap);
+
 		panelImgControls = new JPanel();
-		panelImgControls.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null,
-				null));
+		panelImgControls.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panelImgControls.setBounds(10, 303, 314, 191);
 		this.getContentPane().add(panelImgControls);
 		panelImgControls.setLayout(null);
@@ -185,7 +198,7 @@ public class MapGeneratorFrame extends JFrame {
 		btnOriginal.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnOriginal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapGeneratorFrameController.MapToPanel();
+				mapGeneratorFrameController.MapToPanel(tileMap);
 			}
 		});
 		btnOriginal.setBounds(154, 45, 70, 23);
@@ -209,4 +222,71 @@ public class MapGeneratorFrame extends JFrame {
 		this.getContentPane().setLayout(null);
 	}
 
+	public static MapGeneratorFrameController getMapGeneratorFrameController() {
+		return mapGeneratorFrameController;
+	}
+
+	public static void setMapGeneratorFrameController(MapGeneratorFrameController mapGeneratorFrameController) {
+		MapGeneratorFrame.mapGeneratorFrameController = mapGeneratorFrameController;
+	}
+
+	public JTextField getTxtWidth() {
+		return txtWidth;
+	}
+
+	public void setTxtWidth(JTextField txtWidth) {
+		this.txtWidth = txtWidth;
+	}
+
+	public JTextField getTxtHeight() {
+		return txtHeight;
+	}
+
+	public void setTxtHeight(JTextField txtHeight) {
+		this.txtHeight = txtHeight;
+	}
+
+	public JTextField getTxtSeed() {
+		return txtSeed;
+	}
+
+	public void setTxtSeed(JTextField txtSeed) {
+		this.txtSeed = txtSeed;
+	}
+
+	public JLabel getLabelImageHolder() {
+		return labelImageHolder;
+	}
+
+	public void setLabelImageHolder(JLabel labelImageHolder) {
+		this.labelImageHolder = labelImageHolder;
+	}
+
+	public JScrollPane getMainScrollPane() {
+		return mainScrollPane;
+	}
+
+	public void setMainScrollPane(JScrollPane mainScrollPane) {
+		this.mainScrollPane = mainScrollPane;
+	}
+
+	public JPanel getPanelImg() {
+		return panelImg;
+	}
+
+	public void setPanelImg(JPanel panelImg) {
+		this.panelImg = panelImg;
+	}
+
+	public JPanel getPanelImgControls() {
+		return panelImgControls;
+	}
+
+	public void setPanelImgControls(JPanel panelImgControls) {
+		this.panelImgControls = panelImgControls;
+	}
+
+	public JCheckBox getChckbxIslandMap() {
+		return chckbxIslandMap;
+	}
 }

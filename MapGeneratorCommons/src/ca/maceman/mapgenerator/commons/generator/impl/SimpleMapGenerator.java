@@ -1,7 +1,6 @@
 package ca.maceman.mapgenerator.commons.generator.impl;
 
 import java.awt.Point;
-import java.awt.geom.Line2D;
 import java.util.Random;
 
 import ca.maceman.mapgenerator.commons.constants.TileTypes;
@@ -9,25 +8,37 @@ import ca.maceman.mapgenerator.commons.generator.IMapGenerator;
 import ca.maceman.mapgenerator.commons.manager.TileManager;
 import ca.maceman.mapgenerator.commons.model.Tile;
 import ca.maceman.mapgenerator.commons.model.TileMap;
-import ca.maceman.mapgenerator.commons.model.TileType;
 
+/**
+ * Simple implementation of the {@link IMapGenerator}.
+ * 
+ * @author Macemanca
+ *
+ */
 public class SimpleMapGenerator implements IMapGenerator {
 
 	TileMap tileMap = null;
-	TileManager tileManager = null;
 	Random random = new Random();
+	TileManager tileManager = null;
 
-	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount) throws Exception {
+	/**
+	 * {@inheritDoc}}
+	 */
+	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount, boolean isIsland) throws Exception {
 
 		int seed = random.nextInt();
 
-		return GenerateTerrainMap(width, height, octave, octaveCount, seed);
+		return GenerateTerrainMap(width, height, octave, octaveCount, isIsland, seed);
 	}
 
-	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount, int seed) throws Exception {
+	/**
+	 * {@inheritDoc}}
+	 */
+	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount, boolean isIsland, int seed) throws Exception {
 
 		tileMap = new TileMap();
 		tileManager = new TileManager();
+		Tile tile = new Tile(0, 0, 0, null);
 
 		tileMap.setHeight(height);
 		tileMap.setWidth(width);
@@ -36,16 +47,28 @@ public class SimpleMapGenerator implements IMapGenerator {
 
 		SimpleNoiseGenerator noiseGenerator = new SimpleNoiseGenerator(seed);
 
-		float[][] depthMap = noiseGenerator.GeneratePerlinNoise(noiseGenerator.GenerateSmoothNoise(noiseGenerator.GenerateRadialWhiteNoise(width, height), octave), octaveCount);
+		float[][] depthMap = null;
 
-		for (int mapX = 0; mapX < width; mapX++) {
-			for (int mapY = 0; mapY < height; mapY++) {
-				tileManager.addTileToTileMap(tileMap, new Tile(depthMap[mapX][mapY], mapX, mapY));
-			}
+		if (isIsland) {
+			depthMap = noiseGenerator.GeneratePerlinNoise(noiseGenerator.GenerateSmoothNoise(noiseGenerator.GenerateRadialWhiteNoise(width, height, height / 10), octave), octaveCount);
+		} else {
+			depthMap = noiseGenerator.GeneratePerlinNoise(noiseGenerator.GenerateSmoothNoise(noiseGenerator.GenerateWhiteNoise(width, height, 0), octave), octaveCount);
 		}
 
-		addRivers(tileMap);
-		
+		if (depthMap != null) {
+			for (int mapX = 0; mapX < width; mapX++) {
+				for (int mapY = 0; mapY < height; mapY++) {
+					tile = new Tile(depthMap[mapX][mapY], mapX, mapY, tileMap);
+
+					tile.setType(tileManager.determineTileType(tile));
+					tileManager.addTileToTileMap(tileMap, tile);
+				}
+			}
+		} else {
+			throw new Exception("depthMap is empty.");
+		}
+		// addRivers(tileMap);
+
 		return tileMap;
 	}
 
@@ -54,7 +77,8 @@ public class SimpleMapGenerator implements IMapGenerator {
 	 * 
 	 * Places a river source {@link Tile} and finds a path of least resistance
 	 * to the closest SHALLOW_WATER {@link Tile}
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	private void addRivers(TileMap tileMap) throws Exception {
 		/* TODO: Implement as runnables */
@@ -99,8 +123,7 @@ public class SimpleMapGenerator implements IMapGenerator {
 			float smallestDepth = 10000; // smallest depth so far
 
 			for (Tile currentTile : surroundingTiles) {
-				if (currentTile.getType().getId() != TileTypes.RIVER_SOURCE.getId()
-						&& currentTile.getType().getId() != TileTypes.RIVER.getId()) {
+				if (currentTile.getType().getId() != TileTypes.RIVER_SOURCE.getId() && currentTile.getType().getId() != TileTypes.RIVER.getId()) {
 					if (tileManager.getDifficulty(sourceTile, currentTile, surroundingTiles) < smallestDepth) {
 						smallestDepth = tileManager.getDifficulty(sourceTile, currentTile, surroundingTiles);
 						sourceTile = currentTile;

@@ -7,7 +7,7 @@ import ca.maceman.mapgenerator.commons.generator.INoiseGenerator;
 /**
  * Simple implementation of the {@link INoiseGenerator}
  * 
- * @author Andy Massé
+ * @author Macemanca
  * 
  */
 public class SimpleNoiseGenerator implements INoiseGenerator {
@@ -17,6 +17,7 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 
 	/**
 	 * Simple Constructor
+	 * 
 	 * @param seed
 	 */
 	public SimpleNoiseGenerator(long seed) {
@@ -40,8 +41,7 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 			for (int j = 0; j < height; j++) {
 
 				/* Check if coordinate is part of the border */
-				if (((i <= borderWidth) || (i >= width - borderWidth) || (j <= borderWidth) || (j >= height - borderWidth))
-						&& borderWidth != 0) {
+				if (((i <= borderWidth) || (i >= width - borderWidth) || (j <= borderWidth) || (j >= height - borderWidth)) && borderWidth != 0) {
 
 					noise[i][j] = (float) 0;
 				} else {
@@ -55,13 +55,12 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 	/**
 	 * {@inheritDoc}}
 	 */
-	public float[][] GenerateRadialWhiteNoise(int width, int height) {
+	public float[][] GenerateRadialWhiteNoise(int width, int height, int borderThickness) {
 
 		float[][] noise = new float[width][height];
 		float distanceX = 0f;
 		float distanceY = 0f;
 		float distanceToCenter = 0f;
-		int borderWidth = 10;
 		int centerX = width / 2;
 		int centerY = height / 2;
 
@@ -78,13 +77,11 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 				distanceToCenter = (float) Math.sqrt(distanceX + distanceY);
 
 				/* Check if coordinate is part of the border */
-				if (((i <= borderWidth) || (i >= width - borderWidth)
-						|| (j <= borderWidth) || (j >= height - borderWidth))
-						&& borderWidth != 0) {
+				if (((i <= borderThickness) || (i >= width - borderThickness) || (j <= borderThickness) || (j >= height - borderThickness)) && borderThickness != 0) {
 
 					noise[i][j] = (float) 0;
 				} else {
-					noise[i][j] = (float) r.nextDouble() - (distanceToCenter / 256);
+					noise[i][j] = (float) r.nextDouble() - (distanceToCenter / ((width + height) / 2));
 				}
 			}
 		}
@@ -122,7 +119,8 @@ public class SimpleNoiseGenerator implements INoiseGenerator {
 
 				/* Calculate the vertical sampling indices */
 				sample_Y_A = (mapY / samplePeriod) * samplePeriod;
-				sample_Y_B = (sample_Y_A + samplePeriod) % height; // wrap around
+				sample_Y_B = (sample_Y_A + samplePeriod) % height; // wrap
+																	// around
 				vertical_blend = (mapY - sample_Y_A) * sampleFrequency;
 
 				/* Blend the top and bottom corners */

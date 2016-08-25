@@ -5,13 +5,14 @@ import ca.maceman.mapgenerator.commons.model.TileMap;
 /**
  * Holds the logic for creating a {@link TileMap}.
  * 
- * @author Andy Massé
+ * @author Macemanca
  *
  */
 public interface IMapGenerator {
 
 	/**
-	 * Generates a {@link TileMap} using the {@link INoiseGenerator} and returns it.
+	 * Generates a {@link TileMap} using the {@link INoiseGenerator} and returns
+	 * it.
 	 * 
 	 * @param width
 	 * @param height
@@ -20,10 +21,11 @@ public interface IMapGenerator {
 	 * @return the {@link TileMap}
 	 * @throws Exception
 	 */
-	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount) throws Exception;
-	
+	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount, boolean isIsland) throws Exception;
+
 	/**
-	 * Generates a {@link TileMap} using the {@link INoiseGenerator} with a random seed and returns it.
+	 * Generates a {@link TileMap} using the {@link INoiseGenerator} with a
+	 * random seed and returns it.
 	 * 
 	 * 
 	 * 
@@ -35,6 +37,6 @@ public interface IMapGenerator {
 	 * @return the {@link TileMap}
 	 * @throws Exception
 	 */
-	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount, int seed) throws Exception;
+	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount, boolean isIsland, int seed) throws Exception;
 
 }

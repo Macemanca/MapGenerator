@@ -4,7 +4,8 @@ package ca.maceman.mapgenerator.commons.model;
  * A tile to be used in the {@link TileMap}
  * 
  * Has a position, a size, a depth and a {@link TileType}
- * @author masa015
+ * 
+ * @author Macemanca
  *
  */
 public class Tile {
@@ -28,7 +29,7 @@ public class Tile {
 		this.parentTileMap = parentTileMap;
 	}
 
-	public Tile(float depth, int x, int y) {
+	public Tile(float depth, int x, int y, TileMap parentTileMap) {
 		super();
 		this.depth = depth;
 		this.xPosition = x;
