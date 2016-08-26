@@ -8,6 +8,7 @@ import ca.maceman.mapgenerator.commons.generator.IMapGenerator;
 import ca.maceman.mapgenerator.commons.manager.TileManager;
 import ca.maceman.mapgenerator.commons.model.Tile;
 import ca.maceman.mapgenerator.commons.model.TileMap;
+import ca.maceman.mapgenerator.commons.model.TileType;
 
 /**
  * Simple implementation of the {@link IMapGenerator}.
@@ -126,7 +127,7 @@ public class SimpleMapGenerator implements IMapGenerator {
 	 */
 	private void PlotRiver(TileMap tileMap, Tile sourceTile, Tile destinationTile) {
 
-		float easiestDifficulty = 10000;
+		float easiestDifficulty = 100;
 		float currentDifficulty = 0;
 		Tile[] surroundingTiles = null;
 
@@ -136,18 +137,31 @@ public class SimpleMapGenerator implements IMapGenerator {
 		for (Tile currentTile : surroundingTiles) {
 			if (currentTile.getType().getId() != TileTypes.RIVER_SOURCE.getId() && currentTile.getType().getId() != TileTypes.RIVER.getId()) {
 				currentDifficulty = currentTile.getDepth(); //tileManager.getDifficulty(currentTile, destinationTile, tileManager.getSurroundingTiles(tileMap, currentTile, 1));
-				if (currentDifficulty <= easiestDifficulty) {
+				if (currentDifficulty <= easiestDifficulty && adjescentTileTypes(tileMap, currentTile, TileTypes.RIVER) < 3) {
 					easiestDifficulty = currentDifficulty;
 					easiestTile = currentTile;
 				}
 			}
 		}
 
-		sourceTile = easiestTile;
-		if (sourceTile != null && sourceTile.getType().getId() != TileTypes.SHALLOW_WATER.getId()) {
-			sourceTile.setType(TileTypes.RIVER);
-			PlotRiver(tileMap, sourceTile, destinationTile);
+		if (easiestTile != null && easiestTile.getType().getId() != TileTypes.SHALLOW_WATER.getId()) {
+			easiestTile.setType(TileTypes.RIVER);
+			PlotRiver(tileMap, easiestTile, destinationTile);
+		} else if (easiestTile == null) {
+			sourceTile.setType(TileTypes.LAKE_SOURCE);
 		}
+	}
+
+	private int adjescentTileTypes(TileMap tileMap, Tile sourceTile, TileType tileType) {
+		int adjescentTileTypes = 0;
+
+		for (Tile currentTile : tileManager.getSurroundingTiles(tileMap, sourceTile, 2)) {
+			if (currentTile.getType().getId() == tileType.getId()) {
+				adjescentTileTypes++;
+			}
+		}
+
+		return adjescentTileTypes;
 	}
 
 	private void AddRoads(Tile[][] tiles, Random r) {

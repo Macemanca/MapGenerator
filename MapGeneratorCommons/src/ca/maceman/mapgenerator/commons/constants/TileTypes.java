@@ -21,8 +21,6 @@ public class TileTypes {
 	public static TileType SNOW = new TileType(10, "SNOW");
 	public static TileType RIVER_SOURCE = new TileType(11, "RIVER_SOURCE");
 	public static TileType RIVER = new TileType(12, "RIVER");
-	public static TileType ROAD = new TileType(13, "ROAD");
-	public static TileType TOWNCENTER = new TileType(14, "TOWNCENTER");
-	public static TileType BUILDING = new TileType(15, "BUILDING");
-	public static TileType WALL = new TileType(16, "WALL");
+	public static TileType LAKE_SOURCE = new TileType(13, "LAKE_SOURCE");
+	public static TileType LAKE = new TileType(14, "LAKE");
 }

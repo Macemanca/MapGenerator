@@ -27,8 +27,8 @@ public class OutputHandler {
 		int snowColour = new Color(255, 255, 255).getRGB();
 		int riverSourceColour = shallowWaterColour;
 		int riverColour = shallowWaterColour;
-		int towncenterColour = Color.ORANGE.getRGB();
-		int roadColour = Color.ORANGE.getRGB();
+		int lakeSourceColour = Color.RED.getRGB();
+		int lakeColour = Color.ORANGE.getRGB();
 		int buildingColour = Color.RED.getRGB();
 		int wallColour = Color.GRAY.getRGB();
 		
@@ -74,10 +74,10 @@ public class OutputHandler {
 					bufferImage.setRGB(currentTile.getXPosition(), currentTile.getYPosition(), riverColour);
 					break;
 				case 13:
-					bufferImage.setRGB(currentTile.getXPosition(), currentTile.getYPosition(), towncenterColour);
+					bufferImage.setRGB(currentTile.getXPosition(), currentTile.getYPosition(), lakeSourceColour);
 					break;
 				case 14:
-					bufferImage.setRGB(currentTile.getXPosition(), currentTile.getYPosition(), roadColour);
+					bufferImage.setRGB(currentTile.getXPosition(), currentTile.getYPosition(), lakeColour);
 					break;
 				case 15:
 					bufferImage.setRGB(currentTile.getXPosition(), currentTile.getYPosition(), buildingColour);
