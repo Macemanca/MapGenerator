@@ -73,11 +73,12 @@ public class MapGeneratorFrame extends JFrame {
 		txtWidth.setBounds(87, 8, 86, 20);
 		pnlControls.add(txtWidth);
 		txtWidth.setColumns(10);
-
+		txtWidth.setText("500");
 		txtHeight = new JTextField();
 		txtHeight.setBounds(87, 39, 86, 20);
 		pnlControls.add(txtHeight);
 		txtHeight.setColumns(10);
+		txtHeight.setText("500");
 
 		JLabel lblHeight = new JLabel("Height:");
 		lblHeight.setBounds(10, 42, 85, 14);
@@ -87,7 +88,7 @@ public class MapGeneratorFrame extends JFrame {
 		sliderAmp.setPaintTicks(true);
 		sliderAmp.setPaintLabels(true);
 		sliderAmp.setMinorTickSpacing(1);
-		sliderAmp.setValue(7);
+		sliderAmp.setValue(8);
 		sliderAmp.setMinimum(3);
 		sliderAmp.setMaximum(10);
 		sliderAmp.setBounds(76, 70, 228, 23);
@@ -98,7 +99,7 @@ public class MapGeneratorFrame extends JFrame {
 		pnlControls.add(lblDetail);
 
 		final JSlider sliderBlend = new JSlider();
-		sliderBlend.setValue(7);
+		sliderBlend.setValue(0);
 		sliderBlend.setPaintTicks(true);
 		sliderBlend.setPaintLabels(true);
 		sliderBlend.setPaintTrack(true);

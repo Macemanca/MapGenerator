@@ -86,19 +86,31 @@ public class SimpleMapGenerator implements IMapGenerator {
 		/* TODO: generalize pathing method */
 
 		int dieRoll = 0;
-		Tile destinationTile = null;
+		int maxTileColumn = tileMap.getWidth() - 1;
+		int maxTileRow = tileMap.getHeight() - 1;
 
-		for (Tile[] tileRow : tileMap.getTiles()) {
-			for (Tile sourceTile : tileRow) {
+		Tile destinationTile = null;
+		Tile sourceTile = null;
+
+		for (int mapX = 0; mapX < maxTileColumn; mapX++) {
+			for (int mapY = 0; mapY < maxTileRow; mapY++) {
+				sourceTile = tileMap.getTile(mapX, mapY);
 				if (sourceTile.getType().getId() == TileTypes.MOUNTAIN.getId()) {
 
 					/* Generate river Sources */
 					dieRoll = random.nextInt(100);
 
-					if (dieRoll >= 98) {
+					if (dieRoll >= 95) {
 						sourceTile.setType(TileTypes.RIVER_SOURCE);
 						destinationTile = tileManager.findClosestOfType(tileMap, sourceTile, TileTypes.SHALLOW_WATER);
 						PlotRiver(tileMap, sourceTile, destinationTile);
+
+						if (mapX + 10 < maxTileColumn) {
+							mapX += 10;
+						}
+						if (mapY + 10 < maxTileRow) {
+							mapY += 10;
+						}
 					}
 				}
 			}
@@ -114,25 +126,21 @@ public class SimpleMapGenerator implements IMapGenerator {
 	 */
 	private void PlotRiver(TileMap tileMap, Tile sourceTile, Tile destinationTile) {
 
+		float easiestDifficulty = 10000;
+		float currentDifficulty = 0;
 		Tile[] surroundingTiles = null;
-		//
-		//		int maxTileColumn = tileMap.getWidth() - 1;
-		//		int maxTileRow = tileMap.getHeight() - 1;
-
-		float smallestDepth = 10000; // smallest depth so far
-		float currentDepth = 0; // smallest depth so far
 
 		surroundingTiles = tileManager.getSurroundingTiles(tileMap, sourceTile, 1);
 		Tile easiestTile = null;
+
 		for (Tile currentTile : surroundingTiles) {
 			if (currentTile.getType().getId() != TileTypes.RIVER_SOURCE.getId() && currentTile.getType().getId() != TileTypes.RIVER.getId()) {
-				currentDepth = tileManager.getDifficulty(sourceTile, currentTile, surroundingTiles);
-				if (currentDepth < smallestDepth) {
-					smallestDepth = currentDepth;
+				currentDifficulty = currentTile.getDepth(); //tileManager.getDifficulty(currentTile, destinationTile, tileManager.getSurroundingTiles(tileMap, currentTile, 1));
+				if (currentDifficulty <= easiestDifficulty) {
+					easiestDifficulty = currentDifficulty;
 					easiestTile = currentTile;
 				}
 			}
-
 		}
 
 		sourceTile = easiestTile;

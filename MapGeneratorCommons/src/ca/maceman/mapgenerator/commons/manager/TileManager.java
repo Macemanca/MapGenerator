@@ -68,7 +68,7 @@ public class TileManager {
 	public void plotPath(TileMap tileMap, Tile sourceTile, Tile destinationTile) {
 
 		Tile[] surroundingTiles = null;
-
+		Tile currentTile = null;
 		int maxTileColumn = tileMap.getWidth() - 1;
 		int maxTileRow = tileMap.getHeight() - 1;
 
@@ -76,14 +76,16 @@ public class TileManager {
 
 			float smallestDepth = 10000; // smallest depth so far
 
-			for (Tile currentTile : surroundingTiles) {
-				if (currentTile.getType().getId() != TileTypes.RIVER_SOURCE.getId() && currentTile.getType().getId() != TileTypes.RIVER.getId()) {
-					if (getDifficulty(sourceTile, currentTile, surroundingTiles) < smallestDepth) {
-						smallestDepth = getDifficulty(sourceTile, currentTile, surroundingTiles);
-						sourceTile = currentTile;
+			for (int mapX = 0; mapX > maxTileColumn; mapX++) {
+				for (int mapY = 0; mapY > maxTileRow; mapY++) {
+					currentTile = tileMap.getTile(mapX, mapY);
+					if (currentTile.getType().getId() != TileTypes.RIVER_SOURCE.getId() && currentTile.getType().getId() != TileTypes.RIVER.getId()) {
+						if (getDifficulty(currentTile, destinationTile, surroundingTiles) < smallestDepth) {
+							smallestDepth = getDifficulty(currentTile, destinationTile, surroundingTiles);
+							sourceTile = currentTile;
+						}
 					}
 				}
-
 			}
 		}
 		if (sourceTile.getType().getId() != TileTypes.SHALLOW_WATER.getId()) {
@@ -110,14 +112,13 @@ public class TileManager {
 		float bestCostToMove = 0;
 
 		for (Tile currentTile : surroundingTiles) {
-
 			/* if 0, point is on line */
-			if (Line2D.ptSegDist(sourceTile.getXPosition(), sourceTile.getYPosition(), destinationTile.getXPosition(), destinationTile.getYPosition(), currentTile.getXPosition(), currentTile.getYPosition()) <= 0.5) {
+			if (Line2D.ptSegDist(sourceTile.getXPosition(), sourceTile.getYPosition(), destinationTile.getXPosition(), destinationTile.getYPosition(), currentTile.getXPosition(), currentTile.getYPosition()) <= 0.7) {
 				estimatedCostToMove += currentTile.getDepth();
 			}
 		}
 
-		costToMove = sourceTile.getDepth() * 2;
+		costToMove = sourceTile.getDepth();
 		bestCostToMove = costToMove + estimatedCostToMove;
 
 		return bestCostToMove;
@@ -246,7 +247,7 @@ public class TileManager {
 			}
 		}
 
-		Tile[] surroundingTilesArr =  surroundingTiles.toArray(new Tile[surroundingTiles.size()]);
+		Tile[] surroundingTilesArr = surroundingTiles.toArray(new Tile[surroundingTiles.size()]);
 
 		return surroundingTilesArr;
 	}
