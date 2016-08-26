@@ -13,7 +13,7 @@ import ca.maceman.mapgenerator.commons.model.TileMap;
  * Simple implementation of the {@link IMapGenerator}.
  * 
  * @author Macemanca
- *
+ * 
  */
 public class SimpleMapGenerator implements IMapGenerator {
 
@@ -22,7 +22,7 @@ public class SimpleMapGenerator implements IMapGenerator {
 	TileManager tileManager = null;
 
 	/**
-	 * {@inheritDoc}}
+	 * {@inheritDoc}
 	 */
 	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount, boolean isIsland) throws Exception {
 
@@ -32,7 +32,7 @@ public class SimpleMapGenerator implements IMapGenerator {
 	}
 
 	/**
-	 * {@inheritDoc}}
+	 * {@inheritDoc}
 	 */
 	public TileMap GenerateTerrainMap(int width, int height, int octave, int octaveCount, boolean isIsland, int seed) throws Exception {
 
@@ -67,7 +67,8 @@ public class SimpleMapGenerator implements IMapGenerator {
 		} else {
 			throw new Exception("depthMap is empty.");
 		}
-		// addRivers(tileMap);
+
+		addRivers(tileMap);
 
 		return tileMap;
 	}
@@ -94,7 +95,7 @@ public class SimpleMapGenerator implements IMapGenerator {
 					/* Generate river Sources */
 					dieRoll = random.nextInt(100);
 
-					if (dieRoll >= 90) {
+					if (dieRoll >= 98) {
 						sourceTile.setType(TileTypes.RIVER_SOURCE);
 						destinationTile = tileManager.findClosestOfType(tileMap, sourceTile, TileTypes.SHALLOW_WATER);
 						PlotRiver(tileMap, sourceTile, destinationTile);
@@ -114,25 +115,28 @@ public class SimpleMapGenerator implements IMapGenerator {
 	private void PlotRiver(TileMap tileMap, Tile sourceTile, Tile destinationTile) {
 
 		Tile[] surroundingTiles = null;
+		//
+		//		int maxTileColumn = tileMap.getWidth() - 1;
+		//		int maxTileRow = tileMap.getHeight() - 1;
 
-		int maxTileColumn = tileMap.getWidth() - 1;
-		int maxTileRow = tileMap.getHeight() - 1;
+		float smallestDepth = 10000; // smallest depth so far
+		float currentDepth = 0; // smallest depth so far
 
-		if (tileManager.borderTileCheck(sourceTile)) {
-
-			float smallestDepth = 10000; // smallest depth so far
-
-			for (Tile currentTile : surroundingTiles) {
-				if (currentTile.getType().getId() != TileTypes.RIVER_SOURCE.getId() && currentTile.getType().getId() != TileTypes.RIVER.getId()) {
-					if (tileManager.getDifficulty(sourceTile, currentTile, surroundingTiles) < smallestDepth) {
-						smallestDepth = tileManager.getDifficulty(sourceTile, currentTile, surroundingTiles);
-						sourceTile = currentTile;
-					}
+		surroundingTiles = tileManager.getSurroundingTiles(tileMap, sourceTile, 1);
+		Tile easiestTile = null;
+		for (Tile currentTile : surroundingTiles) {
+			if (currentTile.getType().getId() != TileTypes.RIVER_SOURCE.getId() && currentTile.getType().getId() != TileTypes.RIVER.getId()) {
+				currentDepth = tileManager.getDifficulty(sourceTile, currentTile, surroundingTiles);
+				if (currentDepth < smallestDepth) {
+					smallestDepth = currentDepth;
+					easiestTile = currentTile;
 				}
-
 			}
+
 		}
-		if (sourceTile.getType().getId() != TileTypes.SHALLOW_WATER.getId()) {
+
+		sourceTile = easiestTile;
+		if (sourceTile != null && sourceTile.getType().getId() != TileTypes.SHALLOW_WATER.getId()) {
 			sourceTile.setType(TileTypes.RIVER);
 			PlotRiver(tileMap, sourceTile, destinationTile);
 		}

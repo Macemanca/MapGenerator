@@ -1,6 +1,7 @@
 package ca.maceman.mapgenerator.commons.manager;
 
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
 
 import ca.maceman.mapgenerator.commons.constants.TileTypes;
 import ca.maceman.mapgenerator.commons.model.Tile;
@@ -11,7 +12,7 @@ import ca.maceman.mapgenerator.commons.model.TileType;
  * Holds various methods for managing {@link Tile}s
  * 
  * @author Macemanca
- *
+ * 
  */
 public class TileManager {
 
@@ -22,8 +23,18 @@ public class TileManager {
 	 * @return
 	 */
 	public boolean borderTileCheck(Tile tile) {
-		return tile.getXPosition() != 0 && tile.getYPosition() != 0 && tile.getXPosition() < tile.getParentTileMap().getWidth() - 1 && tile.getYPosition() < tile.getParentTileMap().getHeight() - 1;
+		return (tile.getXPosition() == 0 || tile.getYPosition() == 0 || tile.getXPosition() > tile.getParentTileMap().getWidth() - 1 || tile.getYPosition() < tile.getParentTileMap().getHeight() - 1);
 
+	}
+
+	/**
+	 * Verifies if a {@link Tile} is bordering its {@link TileMap}
+	 * 
+	 * @param tile
+	 * @return
+	 */
+	public boolean outOfBorderCheck(TileMap tileMap, int row, int column) {
+		return row >= 0 && column >= 0 && row <= tileMap.getWidth() - 1 && column <= tileMap.getHeight() - 1;
 	}
 
 	/**
@@ -43,6 +54,7 @@ public class TileManager {
 			}
 		}
 
+		tile.setParentTileMap(tileMap);
 		tileMap.getTiles()[tile.getXPosition()][tile.getYPosition()] = tile;
 	}
 
@@ -131,11 +143,13 @@ public class TileManager {
 		for (Tile[] tileRow : tileMap.getTiles()) {
 			for (Tile currentTile : tileRow) {
 
-				currentDistance = getDistanceBetweenTwoTiles(sourceTile, currentTile);
+				if (currentTile.getType().getId() == type.getId()) {
+					currentDistance = getDistanceBetweenTwoTiles(sourceTile, currentTile);
 
-				if (currentDistance < lastDistance || lastDistance == -1) {
-					lastDistance = currentDistance;
-					closestTile = currentTile;
+					if (currentDistance < lastDistance || lastDistance == -1) {
+						lastDistance = currentDistance;
+						closestTile = currentTile;
+					}
 				}
 			}
 		}
@@ -206,5 +220,34 @@ public class TileManager {
 		}
 
 		return type;
+	}
+
+	public Tile[] getSurroundingTiles(TileMap tileMap, Tile sourceTile, int range) {
+
+		int currentXpos = 0;
+		int currentYpos = 0;
+		int numberOfTiles = (range + 1) * 4;
+		int minRange = 0 - range;
+
+		ArrayList<Tile> surroundingTiles = new ArrayList<Tile>();
+
+		for (int x = minRange; x <= range; x++) {
+			for (int y = minRange; y <= range; y++) {
+				currentXpos = sourceTile.getXPosition() - x;
+				currentYpos = sourceTile.getYPosition() - y;
+				if (x == range
+						|| x == minRange
+						|| y == range
+						|| y == minRange) {
+					if (outOfBorderCheck(tileMap, currentXpos, currentYpos)) {
+						surroundingTiles.add(tileMap.getTile(currentXpos, currentYpos));
+					}
+				}
+			}
+		}
+
+		Tile[] surroundingTilesArr =  surroundingTiles.toArray(new Tile[surroundingTiles.size()]);
+
+		return surroundingTilesArr;
 	}
 }

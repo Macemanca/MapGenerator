@@ -5,7 +5,7 @@ package ca.maceman.mapgenerator.commons.model;
  * height.
  * 
  * @author Macemanca
- *
+ * 
  */
 public class TileMap {
 
@@ -35,6 +35,18 @@ public class TileMap {
 
 	public void setTiles(Tile[][] tiles) {
 		this.tiles = tiles;
+	}
+
+	public Tile getTile(int row, int column) {
+		Tile tile = null;
+		
+		try {
+			tile = tiles[row][column];
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return tile;
 	}
 
 }
