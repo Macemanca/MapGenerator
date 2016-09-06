@@ -2,6 +2,10 @@ package ca.maceman.mapgenerator.swing.controller;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -19,9 +23,10 @@ import ca.maceman.mapgenerator.swing.utils.OutputHandler;
  */
 public class MapGeneratorFrameController {
 
-	private MapGeneratorFrame mapGeneratorFrame;
-	private IMapGenerator mapGenerator;
-	private OutputHandler outputHandler;
+	private MapGeneratorFrame mapGeneratorFrame = null;
+	private IMapGenerator mapGenerator = null;
+	private OutputHandler outputHandler = null;
+	private BufferedImage originalImage = null;
 
 	
 	/**
@@ -84,6 +89,14 @@ public class MapGeneratorFrameController {
 	}
 
 	/**
+	 * Displays a message in a dialog box.
+	 * 
+	 * @param message
+	 */
+	public void showInfo(String message) {
+		JOptionPane.showMessageDialog(mapGeneratorFrame,  message, "Info", JOptionPane.INFORMATION_MESSAGE);
+	}
+	/**
 	 * Displays an error message in a dialog box.
 	 * 
 	 * @param errorMessage
@@ -91,11 +104,11 @@ public class MapGeneratorFrameController {
 	public void showErr(String errorMessage) {
 		JOptionPane.showMessageDialog(mapGeneratorFrame, "An error has occured: " + errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
 	}
-
 	public void MapToPanel(TileMap tileMap) {
 
 		outputHandler = new OutputHandler();
 
+		
 		try {
 			if (tileMap != null) {
 				mapGeneratorFrame.getLabelImageHolder().setIcon(new ImageIcon((Image) outputHandler.tileMapToImage(tileMap)));
@@ -108,9 +121,11 @@ public class MapGeneratorFrameController {
 				mapGeneratorFrame.getMainScrollPane().setViewportView(mapGeneratorFrame.getPanelImg());
 				mapGeneratorFrame.getMainScrollPane().repaint();
 				mapGeneratorFrame.getMainScrollPane().revalidate();
-
+				
 				mapGeneratorFrame.repaint();
 				mapGeneratorFrame.revalidate();
+				originalImage = (BufferedImage) ((ImageIcon)mapGeneratorFrame.getLabelImageHolder().getIcon()).getImage();
+				
 			} else {
 
 				throw new Exception("tileMap is null.");
@@ -122,8 +137,52 @@ public class MapGeneratorFrameController {
 
 	}
 
-	public void scaledImage(int i) {
-		// TODO Auto-generated method stub
+	public void scaleImage(int i) {
+		try {
+			
+			if (originalImage != null) {
+				
+				int width = originalImage.getWidth();
+				int height = originalImage.getHeight();
 
+				BufferedImage newImage = new BufferedImage(width * i, height * i,BufferedImage.TYPE_INT_ARGB);
+				AffineTransform t = new AffineTransform();
+				t.scale((double) i, (double) i);
+				AffineTransformOp scale = new AffineTransformOp(t, AffineTransformOp.TYPE_BILINEAR);
+				newImage = scale.filter(originalImage, newImage);
+
+				mapGeneratorFrame.getLabelImageHolder().setIcon(new ImageIcon((Image) newImage));
+
+				mapGeneratorFrame.getLabelImageHolder().setSize(
+						new Dimension(newImage.getWidth(), newImage.getHeight()));
+				mapGeneratorFrame.getPanelImg().setPreferredSize(
+						mapGeneratorFrame.getLabelImageHolder().getSize());
+				mapGeneratorFrame.getPanelImg().repaint();
+				mapGeneratorFrame.getPanelImg().revalidate();
+
+				mapGeneratorFrame.getMainScrollPane().setViewportView(mapGeneratorFrame.getPanelImg());
+				mapGeneratorFrame.getMainScrollPane().repaint();
+				mapGeneratorFrame.getMainScrollPane().revalidate();
+
+				mapGeneratorFrame.repaint();
+				mapGeneratorFrame.revalidate();
+			}else{
+				showErr("You have not yet generated a map.");
+			}
+			
+		} catch (Exception e) {
+			showErr(e.toString());
+		}
+	}
+
+	public void saveImageToFile() {
+		String filePath = "";
+		try {
+			filePath = outputHandler.saveImageToFile(originalImage).getAbsolutePath();
+		} catch (IOException e) {
+			showErr(e.toString());
+		}
+		showInfo("The has been saved to : " + filePath);
+		
 	}
 }

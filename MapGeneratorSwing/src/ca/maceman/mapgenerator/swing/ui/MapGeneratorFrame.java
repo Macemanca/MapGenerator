@@ -155,6 +155,14 @@ public class MapGeneratorFrame extends JFrame {
 
 		JButton btnSaveAsImage = new JButton("Save Image as .png");
 		btnSaveAsImage.setBounds(10, 123, 294, 23);
+		btnSaveAsImage.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mapGeneratorFrameController.saveImageToFile();
+				
+			}
+		});
 		panelImgControls.add(btnSaveAsImage);
 
 		JButton btnSaveAsTxt = new JButton("Dump Array to .txt");
@@ -169,7 +177,7 @@ public class MapGeneratorFrame extends JFrame {
 		btnScale2.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnScale2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				mapGeneratorFrameController.scaledImage(2);
+				mapGeneratorFrameController.scaleImage(2);
 			}
 		});
 		btnScale2.setBounds(74, 11, 70, 23);
@@ -179,7 +187,7 @@ public class MapGeneratorFrame extends JFrame {
 		btnScale4.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnScale4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapGeneratorFrameController.scaledImage(4);
+				mapGeneratorFrameController.scaleImage(4);
 			}
 		});
 		btnScale4.setBounds(154, 11, 70, 23);
@@ -189,7 +197,7 @@ public class MapGeneratorFrame extends JFrame {
 		btnScale8.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnScale8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapGeneratorFrameController.scaledImage(8);
+				mapGeneratorFrameController.scaleImage(8);
 			}
 		});
 		btnScale8.setBounds(234, 11, 70, 23);
@@ -209,7 +217,7 @@ public class MapGeneratorFrame extends JFrame {
 		btnScale16.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		btnScale16.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				mapGeneratorFrameController.scaledImage(16);
+				mapGeneratorFrameController.scaleImage(16);
 			}
 		});
 		btnScale16.setBounds(74, 45, 70, 23);

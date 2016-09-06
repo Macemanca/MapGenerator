@@ -2,6 +2,10 @@ package ca.maceman.mapgenerator.swing.utils;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import ca.maceman.mapgenerator.commons.model.Tile;
 import ca.maceman.mapgenerator.commons.model.TileMap;
@@ -94,4 +98,17 @@ public class OutputHandler {
 		return bufferImage;
 	}
 
+	public File saveImageToFile(BufferedImage image) throws IOException{
+		 
+	    File outputfile = new File("map.png");
+	    if (outputfile.exists()){
+	    	int fileNumber = 0;
+	    	while(outputfile.exists()){
+	    		fileNumber++;
+	    		outputfile = new File("map_"+fileNumber+".png");
+	    	}
+	    }
+	    ImageIO.write(image, "png", outputfile);
+	    return outputfile;
+	}
 }
